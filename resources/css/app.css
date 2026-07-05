@@ -1,0 +1,45 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-primary-50: #fef2f1;
+    --color-primary-100: #fde3df;
+    --color-primary-200: #fbcbc0;
+    --color-primary-300: #f7ad9e;
+    --color-primary-400: #f28d78;
+    --color-primary-500: #e86a4f;
+    --color-primary-600: #982315;
+    --color-primary-700: #7e1d12;
+    --color-primary-800: #691710;
+    --color-primary-900: #58140d;
+    --color-primary-950: #3a0e08;
+    --color-indigo-50: #fef2f1;
+    --color-indigo-100: #fde3df;
+    --color-indigo-200: #fbcbc0;
+    --color-indigo-300: #f7ad9e;
+    --color-indigo-400: #f28d78;
+    --color-indigo-500: #e86a4f;
+    --color-indigo-600: #982315;
+    --color-indigo-700: #7e1d12;
+    --color-indigo-800: #691710;
+    --color-indigo-900: #58140d;
+    --color-indigo-950: #3a0e08;
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none !important;
+    --tw-ring-color: transparent !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+    box-shadow: none !important;
+}
