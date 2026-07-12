@@ -46,7 +46,7 @@ class YouTubeController extends Controller
         $this->logger->logCreated('youtube_video', $video->id, $video->title);
 
         return redirect()->route('admin.youtube-videos.index')
-            ->with('success', 'YouTube video added successfully.');
+            ->with('success', __('messages.msg_youtube_added'));
     }
 
     public function edit(YouTubeVideo $youtubeVideo): View
@@ -62,7 +62,7 @@ class YouTubeController extends Controller
         $this->logger->logUpdated('youtube_video', $youtubeVideo->id, $youtubeVideo->title);
 
         return redirect()->route('admin.youtube-videos.index')
-            ->with('success', 'YouTube video updated successfully.');
+            ->with('success', __('messages.msg_youtube_updated'));
     }
 
     public function destroy(YouTubeVideo $youtubeVideo): RedirectResponse
@@ -71,6 +71,6 @@ class YouTubeController extends Controller
         $youtubeVideo->delete();
 
         return redirect()->route('admin.youtube-videos.index')
-            ->with('success', 'YouTube video deleted successfully.');
+            ->with('success', __('messages.msg_youtube_deleted'));
     }
 }

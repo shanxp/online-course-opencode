@@ -36,6 +36,6 @@ class ProfileController extends Controller
 
         $this->logger->log('password_changed', "User {$user->username} changed their password");
 
-        return back()->with('success', 'Password updated successfully.');
+        return back()->with('success', __('messages.msg_password_updated'));
     }
 }

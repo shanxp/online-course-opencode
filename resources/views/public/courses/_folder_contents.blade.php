@@ -25,7 +25,7 @@
                     <p class="text-xs text-gray-500">{{ __('messages.pdf_dash', ['size' => round($media->size / 1024)]) }}</p>
                 </div>
                 @auth
-                    <a href="{{ route('media.stream', $media) }}" target="_blank" class="shrink-0 px-3 py-1.5 text-xs font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700">{{ __('messages.view_pdf') }}</a>
+                    <a href="{{ route('media.download', $media) }}" class="shrink-0 px-3 py-1.5 text-xs font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700">{{ __('messages.download') }}</a>
                 @else
                     <a href="{{ route('login') }}" class="shrink-0 px-3 py-1.5 text-xs font-medium text-primary-600 border border-primary-300 rounded-md hover:bg-primary-50">{{ __('messages.sign_in_to_view') }}</a>
                 @endauth

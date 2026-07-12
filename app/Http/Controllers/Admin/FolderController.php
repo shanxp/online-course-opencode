@@ -49,7 +49,7 @@ class FolderController extends Controller
         $this->logger->logCreated('folder', $folder->id, $folder->name);
 
         return redirect()->route('admin.courses.show', $folder->course_id)
-            ->with('success', 'Folder created successfully.');
+            ->with('success', __('messages.msg_folder_created'));
     }
 
     public function edit(Folder $folder): View
@@ -65,7 +65,7 @@ class FolderController extends Controller
         $this->logger->logUpdated('folder', $folder->id, $folder->name);
 
         return redirect()->route('admin.courses.show', $folder->course_id)
-            ->with('success', 'Folder updated successfully.');
+            ->with('success', __('messages.msg_folder_updated'));
     }
 
     public function moveUp(Folder $folder): RedirectResponse
@@ -82,7 +82,7 @@ class FolderController extends Controller
 
         if ($index === false || $index === 0) {
             return redirect()->route('admin.courses.show', $folder->course_id)
-                ->with('error', 'Folder is already at the top.');
+                ->with('error', __('messages.msg_folder_at_top'));
         }
 
         $item = $siblings->pull($index);
@@ -95,7 +95,7 @@ class FolderController extends Controller
         $this->logger->logUpdated('folder', $folder->id, "{$folder->name} moved up");
 
         return redirect()->route('admin.courses.show', $folder->course_id)
-            ->with('success', 'Folder moved up.');
+            ->with('success', __('messages.msg_folder_moved_up'));
     }
 
     public function moveDown(Folder $folder): RedirectResponse
@@ -112,7 +112,7 @@ class FolderController extends Controller
 
         if ($index === false || $index === $siblings->count() - 1) {
             return redirect()->route('admin.courses.show', $folder->course_id)
-                ->with('error', 'Folder is already at the bottom.');
+                ->with('error', __('messages.msg_folder_at_bottom'));
         }
 
         $item = $siblings->pull($index);
@@ -125,7 +125,7 @@ class FolderController extends Controller
         $this->logger->logUpdated('folder', $folder->id, "{$folder->name} moved down");
 
         return redirect()->route('admin.courses.show', $folder->course_id)
-            ->with('success', 'Folder moved down.');
+            ->with('success', __('messages.msg_folder_moved_down'));
     }
 
     public function toggleSticky(Folder $folder): RedirectResponse
@@ -135,7 +135,7 @@ class FolderController extends Controller
         $this->logger->logUpdated('folder', $folder->id, "{$folder->name} sticky toggled");
 
         return redirect()->route('admin.courses.show', $folder->course_id)
-            ->with('success', $folder->is_sticky ? 'Folder pinned.' : 'Folder unpinned.');
+            ->with('success', $folder->is_sticky ? __('messages.msg_folder_pinned') : __('messages.msg_folder_unpinned'));
     }
 
     public function destroy(Folder $folder): RedirectResponse
@@ -146,6 +146,6 @@ class FolderController extends Controller
         $folder->delete();
 
         return redirect()->route('admin.courses.show', $courseId)
-            ->with('success', 'Folder deleted successfully.');
+            ->with('success', __('messages.msg_folder_deleted'));
     }
 }

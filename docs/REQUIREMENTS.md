@@ -25,7 +25,8 @@ A private, admin-managed Course Content Management System built with Laravel 13,
 - **Legacy password support**: users table has `old_password` (varchar 40, nullable) for importing users from legacy systems. On login, if bcrypt `Auth::attempt()` fails and `old_password` is populated, the controller computes `strtoupper(sha1(strtolower(username) + password))` and matches against the stored value. On match, the password is migrated to bcrypt and `old_password` is cleared.
 
 ### 1.2 User Model (`App\Models\User`)
-- Fields: name, username (unique), email, password, old_password (varchar 40, nullable), role_id (FK to roles), is_active (boolean)
+- Fields: name, username (unique), email, password, old_password (varchar 40, nullable), role_id (FK to roles), is_active (boolean), last_login_at (timestamp, nullable)
+- `$fillable` includes `last_login_at`; casts includes `'last_login_at' => 'datetime'`
 - `isAdmin()` — checks `role->slug === 'admin'`
 - `hasRole(slug)` — generic role check
 - `accessibleCourses()` — returns courses the user can view (via group permissions):
@@ -131,14 +132,16 @@ Course
 | `/` | `home` | Homepage with hero slideshow, published course cards, login prompt |
 | `/login` | `login` | Login form (username) |
 | `/locale/{locale}` | `locale.switch` | Switch site language (en/de) — stored in session |
+| `/course/{slug}` | `courses.public.show` | Public course details page (thumbnail, description, sign-in prompt) |
 
 ### 4.2 Authenticated User Routes
 | URI | Name | Action |
 |-----|------|--------|
-| `/dashboard` | `dashboard` | User dashboard with accessible courses |
+| `/dashboard` | `dashboard` | User dashboard with accessible courses — supports `?sort=` param |
 | `/profile` | `profile` | Profile page with password change form |
 | `/password` | `password.update` | POST — update password (current + new + confirm) |
-| `/courses/{course}` | `courses.show` | Course content viewer (folder/media/video display) |
+| `/user/courses` | — | Redirects to dashboard |
+| `/user/courses/{course:slug}` | `courses.show` | Course content viewer (folder/media/video display) — resolved by slug |
 | `/media/{media}/stream` | `media.stream` | Protected media streaming |
 | `/media/{media}/download` | `media.download` | Protected media download |
 
@@ -147,13 +150,13 @@ Course
 |-----|------|--------|
 | `GET /admin` | — | Redirects to `/admin/dashboard` |
 | `GET /admin/dashboard` | `admin.dashboard` | Stats dashboard |
-| `/admin/courses/*` | `admin.courses.*` | Full CRUD + show |
-| `/admin/folders/*` | `admin.folders.*` | CRUD + move-up/move-down |
+| `/admin/courses/*` | `admin.courses.*` | Full CRUD + show; slug field in create/edit with JS auto-generation |
+| `/admin/folders/*` | `admin.folders.*` | CRUD + move-up/move-down + toggle-sticky |
 | `/admin/media/*` | `admin.media.*` | Index, create, destroy, sync |
 | `/admin/youtube-videos/*` | `admin.youtube-videos.*` | CRUD |
-| `/admin/users/*` | `admin.users.*` | CRUD + reset-password |
+| `/admin/users/*` | `admin.users.*` | CRUD (except show) + reset-password; `GET /admin/users/{user}` redirects to edit |
 | `/admin/permissions` | `admin.permissions.*` | Group management CRUD + add/remove members/courses/folders |
-| `/admin/activity-logs` | `admin.activity-logs.index` | Activity log viewer |
+| `/admin/activity-logs` | `admin.activity-logs.index` | Activity log viewer (filterable by user) |
 
 ---
 
@@ -161,18 +164,23 @@ Course
 
 ### 5.1 Dashboard
 - Stats cards: total courses, published courses, total users, active users
-- Recent courses table
+- Recent courses table with ID column
+- Courses sortable by Default, Title, Newest, Oldest via dropdown
 
 ### 5.2 Course Management
-- Create/Edit: title, description, thumbnail upload, published toggle, show_on_homepage toggle
-- Show page: folders listed as cards with media/video content inline, folder reorder buttons
+- Create/Edit: title, description (Quill.js WYSIWYG editor), slug (auto-generated from title, admin can override, unique), thumbnail upload, remove thumbnail checkbox, published toggle, show_on_homepage toggle
+- Show page: folders listed as accordion with media/video content inline, folder reorder buttons; thumbnail left + description right in flex row description right)
 - Thumbnail max size: configurable via `THUMBNAIL_MAX_SIZE` env var (default 2048KB)
+- Created at column in course index table (with minute precision)
+- Slug auto-generated on create and update via `booted` callbacks; validated as nullable + unique in form requests
+- Courses sortable on homepage and user dashboard (Default, Title A-Z, Title Z-A, Newest, Oldest); Newest is default
 
 ### 5.3 Folder Management
 - Create with parent selection (course + optional parent folder)
-- Reorder via up/down chevron buttons
+- Reorder via up/down chevron buttons; toggle sticky via bookmark button
 - Unlimited nesting depth
 - Filter by course
+- Created at and updated at timestamps shown on folder accordion headers and sub-folders (with minute precision)
 
 ### 5.4 Media Management
 - Upload: file (mp3/pdf), name, course, folder selector (hierarchy-aware dropdown with `buildFolderTree()`)
@@ -184,10 +192,14 @@ Course
 - **Password reset**: `GET /admin/users/{user}/reset-password` — generates random 12-char password, redirects back to edit page with a yellow alert box showing the password and a Copy button; also clears `old_password`
 - **Admin sets password on edit**: if password field is filled, it's hashed and `old_password` is cleared
 - Groups column shows user's group memberships as badges
+- Created at and last login columns in user index; both sortable (clickable column headers with ↑/↓ indicator)
+- User edit page shows created, updated, and last login timestamps
+- User list rows are clickable (navigate to edit page); actions column uses `@click.stop`
+- `GET /admin/users/{user}` redirects to edit page (resource `show` was excluded)
 
 ### 5.6 Activity Logs
 - Tracks: login, logout, CRUD operations, downloads, permission changes
-- Filterable by action type and user
+- Filterable by user via multi-select dropdown (`<x-searchable-multi-select>` with `autosubmit` prop)
 
 ---
 
@@ -195,7 +207,8 @@ Course
 
 ### 6.1 User Dashboard
 - Lists courses the user can access via their groups
-- Links to course content viewer
+- Courses sortable by Default, Title (A-Z), Title (Z-A), Newest, Oldest via dropdown; Newest is default
+- Links to course content viewer via `/user/courses/{slug}`
 
 ### 6.2 Profile Page (`/profile`)
 - **Password change**: requires current password, new password with confirmation; validated via `current_password` rule
@@ -207,9 +220,10 @@ Course
 - **Folder-level only**: only assigned folders (plus ancestors) visible; uncategorized content hidden
 - Admin users see all content
 - MP3 displayed with HTML5 `<audio>` player
-- PDF displayed with "View PDF" link (opens in new tab)
-- Download links shown when user has download permission (course-level or folder-level)
+- PDF displayed with "Download PDF" button (download route, no longer opens in new tab)
 - YouTube videos shown as external links
+- Folder accordion headers and sub-folders show created at timestamp (with minute precision)
+- Thumbnail left + description right in flex row
 
 ---
 
@@ -224,42 +238,52 @@ Course
 - **Desktop sidebar**: in-flow flex (not fixed) to prevent Alpine hydration flash
 - **Mobile sidebar**: fixed overlay with slide transition (`x-transition`), triggered by hamburger
 - `data-sidebar-desktop` attribute + inline `<style>` block ensures correct layout before Tailwind CSS loads
-- Collapsible width toggle (`w-64` / `w-16`) via `sidebarOpen` Alpine state
-- Critical CSS hides mobile sidebar elements before Alpine/Tailwind initialize:
-  ```css
-  [data-mobile-sidebar], [data-mobile-backdrop] { display: none; }
-  ```
+- Sidebar width `w-80` (was `w-64`)
+- Logo container has `bg-white` background; logo at `h-14 w-auto`
+- Collapsible width toggle (`w-64` / `w-16`) — removed, now fixed `w-80`
+- Mobile sidebar uses `x-cloak` to prevent flash before Alpine initializes (no longer relies on CSS `display: none` override — that rule was removed as it was overriding Alpine's `x-show`)
 - **Admin sidebar links** (order): Dashboard, Courses, Users, Media, YouTube, Permissions, Groups, Slideshow, Activity Logs
 - **User sidebar links**: My Courses, Profile
 
 ### 7.3 Focus Ring Removal
 - Global CSS in `resources/css/app.css` removes `outline`, `--tw-ring-*`, and `box-shadow` on focus for all `input`, `textarea`, and `select` elements
+- Input border visibility: login form inputs use `border-2 border-gray-700` for clear visibility (Tailwind v4 omits `border-2` unless detected in source; initially didn't appear until after build)
 
-### 7.4 Locale Switcher
+### 7.4 Login Page
+- Logo displayed at `h-16` wrapped in `<a href="{{ route('home') }}">` with `hover:opacity-80`
+- Locale switcher in top-right corner
+- "Back to Homepage" link below login button
+- Form uses `autocomplete="off"`; password field uses `autocomplete="new-password"` to prevent browser autofill
+- Input borders use `border-2 border-gray-700` for visibility
+
+### 7.5 Locale Switcher
 - Globe icon in `top-nav` showing current locale (`EN`/`DE`)
 - Dropdown switches locale via `GET /locale/{locale}` route (stored in session)
+- Also available on login page
 - `SetLocale` middleware reads session and sets app locale on every request
 - Default locale set via `APP_LOCALE=de` in `.env` (German default)
 
-### 7.5 Components
+### 7.6 Components
 - `<x-sidebar />` — desktop + mobile sidebar with nav items
 - `<x-top-nav />` — header bar with sidebar toggle + user dropdown + logout
 - `<x-breadcrumbs />` — breadcrumb navigation
 - `<x-toast />` — session flash notification (success/error), single-message Alpine component (no `x-for`)
 - `<x-audio-player />` — HTML5 audio player for MP3 files
 - `<x-empty-state />` — placeholder when no data exists
-- `<x-searchable-select />` — single-select searchable dropdown (Alpine-powered, keyboard navigation)
-- `<x-searchable-multi-select />` — multi-select variant with removable tags, `disabledIds` prop for greyed-out items, submits comma-separated IDs via hidden input
+- `<x-searchable-select />` — single-select searchable dropdown (Alpine-powered, keyboard navigation); supports `autosubmit` prop (auto-submits parent form on select/clear)
+- `<x-searchable-multi-select />` — multi-select variant with removable tags, `disabledIds` prop for greyed-out items, submits comma-separated IDs via hidden input; supports `autosubmit` prop (used in activity log filter)
 - `<x-sidebar-nav-items />` — shared sidebar navigation links for admin and user roles
 - `<x-confirm-dialog />` — Alpine-powered modal confirm dialog; replaces all 17 native `confirm()` calls; triggered via `$dispatch('confirm-open', { action, method, message, isLink })`; includes backdrop, warning icon, Cancel/Confirm buttons; handles both form POST and link GET via `isLink` flag
+- **Quill.js WYSIWYG editor** (not a Blade component) — loaded via CDN in `layouts/admin.blade.php`; initialized on `#editor` div; custom `< >` button toggles source code textarea; hidden `description` textarea populated on form submit; renders HTML descriptions safely via `{!! !!}`
 
-### 7.6 Homepage (`/`)
-- Sticky nav: app name, Courses anchor link, Login/Dashboard button, locale switcher, mobile hamburger menu
+### 7.7 Homepage (`/`)
+- Sticky nav: app name logo (constrained to `max-width: 300px` via inline style, `py-4` padding), Courses anchor link, Login/Dashboard button, locale switcher, mobile hamburger menu
 - **Hero slideshow**: full-width crossfading images, dark gradient overlay for readability, auto-advances every 5s, clickable dot navigation. Images are **database-driven** (`slideshow_images` table) — managed via admin CRUD (`/admin/slideshow-images`). No `<template x-for>` (uses individual elements to avoid Alpine `cloneNode` error)
-- **Course cards**: responsive grid (1/2/3 columns), thumbnail (or gradient fallback), title, description (2-line clamp), fully clickable `<a>` tags with View Content / Edit (admin) / Sign in to view (guest) links. Folder count removed.
+- **Course cards**: responsive grid (1/2/3 columns), thumbnail (or gradient fallback), title, description (2-line clamp), fully clickable `<a>` tags linking to `/course/{slug}` (public details page). Sort dropdown: Default, Title A-Z, Title Z-A, Newest, Oldest (Newest is default).
+- **Public course details page** (`/course/{slug}`): shows thumbnail left, description right in flex row with sign-in prompt (no folder content or materials shown to guests)
 - **Footer**: dark background, copyright, login/dashboard link
 
-### 7.7 Mobile Responsiveness
+### 7.8 Mobile Responsiveness
 - All admin pages stack cards vertically below `lg:` breakpoint
 - Sidebar toggle switches between desktop collapse and mobile overlay based on viewport width
 - Forms use flex-wrap + min-widths to prevent overflow
@@ -377,15 +401,16 @@ Each course has 2-3 levels of nested folders. YouTube videos are seeded into Web
 
 ### 10.2 Flash Prevention
 - No `x-cloak` on admin/user layouts (causes white screen while Alpine/Vite loads)
-- Mobile sidebar elements hidden via inline CSS (`data-mobile-sidebar`, `data-mobile-backdrop` attributes) before Tailwind loads
-- Desktop sidebar uses `data-sidebar-desktop` attribute + critical CSS for immediate layout
+- Mobile sidebar elements now use `x-cloak` (was previously CSS `display: none` via `data-mobile-sidebar` attribute, which was removed because it overrode Alpine's `x-show`)
+- Desktop sidebar uses inline structure in the layout for immediate visibility
 
 ### 10.3 Localization
 - Translation files in `lang/en/` and `lang/de/` for each language
-- App-specific strings in `messages.php` (~278 keys per language); framework strings in `auth.php`, `pagination.php`, `passwords.php`, `validation.php`
+- App-specific strings in `messages.php` (~320+ keys per language); framework strings in `auth.php`, `pagination.php`, `passwords.php`, `validation.php`
 - To add a new language: create a new directory `lang/{code}/`, copy files from `en/`, translate all values
 - Use `__('messages.key_name')` in Blade views; `:attribute` placeholders in validation strings are replaced automatically
 - **All Blade views fully translated**: every button, label, header, placeholder, empty state, confirm dialog, and table header uses `__('messages.xxx')` — no hardcoded English remains
+- **All controller flash messages translated**: all `->with('success', ...)`, `->with('error', ...)`, `->withErrors(...)` in controllers replaced with `__('messages.msg_*')` — covers course, folder, user, group, YouTube, slideshow, media file, login, and password CRUD/action flash messages; ~40+ `msg_*` keys added to both en and de files
 - Pagination labels are translatable: `first`, `last`, `showing`, `to`, `of`, `results`, `goto_page`, `navigation` keys in `lang/*/pagination.php`
 - Missing `messages.courses` key was added to both `en` and `de` (was causing `messages.courses` fallback to appear in views)
 
@@ -394,6 +419,7 @@ Each course has 2-3 levels of nested folders. YouTube videos are seeded into Web
 - The authentication flow: bcrypt check → legacy SHA1 check → migrate to bcrypt
 - On successful legacy login, `old_password` is cleared and the password is hashed with bcrypt
 - Any password change (admin reset, user self-change, admin edit) clears `old_password`
+- `last_login_at` is recorded on every successful authentication (both bcrypt and legacy paths) via `$user->update(['last_login_at' => now()])`
 
 ### 10.5 YouTubeVideo Table Name
 - The model has `$table = 'youtube_videos'` to override Laravel's automatic pluralization which would produce `you_tube_videos`

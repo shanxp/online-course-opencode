@@ -36,7 +36,7 @@ class SlideshowImageController extends Controller
         ]);
 
         return redirect()->route('admin.slideshow-images.index')
-            ->with('success', 'Slideshow image added.');
+            ->with('success', __('messages.msg_slideshow_added'));
     }
 
     public function edit(SlideshowImage $slideshowImage): View
@@ -59,13 +59,13 @@ class SlideshowImageController extends Controller
         ]);
 
         return redirect()->route('admin.slideshow-images.index')
-            ->with('success', 'Slideshow image updated.');
+            ->with('success', __('messages.msg_slideshow_updated'));
     }
 
     public function destroy(SlideshowImage $slideshowImage): RedirectResponse
     {
         $slideshowImage->delete();
         return redirect()->route('admin.slideshow-images.index')
-            ->with('success', 'Slideshow image removed.');
+            ->with('success', __('messages.msg_slideshow_deleted'));
     }
 }

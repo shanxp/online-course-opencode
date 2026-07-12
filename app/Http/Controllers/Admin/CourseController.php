@@ -44,7 +44,7 @@ class CourseController extends Controller
         $this->logger->logCreated('course', $course->id, $course->title);
 
         return redirect()->route('admin.courses.index')
-            ->with('success', 'Course created successfully.');
+            ->with('success', __('messages.msg_course_created'));
     }
 
     public function show(Request $request, Course $course): View
@@ -94,7 +94,7 @@ class CourseController extends Controller
         $this->logger->logUpdated('course', $course->id, $course->title);
 
         return redirect()->route('admin.courses.index')
-            ->with('success', 'Course updated successfully.');
+            ->with('success', __('messages.msg_course_updated'));
     }
 
     public function destroy(Course $course): RedirectResponse
@@ -104,6 +104,6 @@ class CourseController extends Controller
         $course->delete();
 
         return redirect()->route('admin.courses.index')
-            ->with('success', 'Course deleted successfully.');
+            ->with('success', __('messages.msg_course_deleted'));
     }
 }

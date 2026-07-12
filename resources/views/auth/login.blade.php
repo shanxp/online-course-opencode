@@ -24,13 +24,13 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('login') }}" autocomplete="off">
                 @csrf
 
                 <div class="mb-4">
                     <label for="username" class="block text-sm font-medium text-gray-700">{{ __('messages.username') }}</label>
                     <input type="text" name="username" id="username" value="{{ old('username') }}" required autofocus
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-base px-4 py-3">
+                           class="mt-1 block w-full rounded-md border-2 border-gray-700 shadow-sm focus:border-primary-600 text-base px-4 py-3 bg-white">
                     @error('username')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -38,8 +38,8 @@
 
                 <div class="mb-4">
                     <label for="password" class="block text-sm font-medium text-gray-700">{{ __('messages.password') }}</label>
-                    <input type="password" name="password" id="password" required
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-base px-4 py-3">
+                    <input type="password" name="password" id="password" required autocomplete="new-password"
+                           class="mt-1 block w-full rounded-md border-2 border-gray-700 shadow-sm focus:border-primary-600 text-base px-4 py-3 bg-white">
                 </div>
 
                 <div class="mb-4 flex items-center">

@@ -64,7 +64,7 @@ class UserController extends Controller
         $this->logger->logCreated('user', $user->id, $user->username);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User created successfully.');
+            ->with('success', __('messages.msg_user_created'));
     }
 
     public function edit(User $user): View
@@ -89,20 +89,20 @@ class UserController extends Controller
         $this->logger->logUpdated('user', $user->id, $user->username);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User updated successfully.');
+            ->with('success', __('messages.msg_user_updated'));
     }
 
     public function destroy(User $user): RedirectResponse
     {
         if ($user->id === auth()->id()) {
-            return back()->with('error', 'You cannot delete your own account.');
+            return back()->with('error', __('messages.msg_cannot_delete_self'));
         }
 
         $this->logger->logDeleted('user', $user->id, $user->username);
         $user->delete();
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User deleted successfully.');
+            ->with('success', __('messages.msg_user_deleted'));
     }
 
     public function resetPassword(Request $request, User $user): RedirectResponse

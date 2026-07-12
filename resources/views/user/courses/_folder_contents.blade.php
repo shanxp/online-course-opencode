@@ -15,12 +15,8 @@
                     <p class="text-sm font-medium text-gray-900">{{ $media->name }}</p>
                     <p class="text-xs text-gray-500">{{ __('messages.pdf_dash', ['size' => round($media->size / 1024)]) }}</p>
                 </div>
-                <a href="{{ route('media.stream', $media) }}" target="_blank"
-                   class="shrink-0 px-3 py-1.5 text-xs font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700">{{ __('messages.view_pdf') }}</a>
-                @can('download', $media)
-                    <a href="{{ route('media.download', $media) }}"
-                       class="shrink-0 text-xs text-primary-600 hover:text-primary-900">{{ __('messages.download') }}</a>
-                @endcan
+                <a href="{{ route('media.download', $media) }}"
+                   class="shrink-0 px-3 py-1.5 text-xs font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700">{{ __('messages.download') }}</a>
             @endif
         </div>
     </div>

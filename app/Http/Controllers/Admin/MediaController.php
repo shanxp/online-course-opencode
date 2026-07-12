@@ -80,7 +80,7 @@ class MediaController extends Controller
         $this->logger->logCreated('media_file', $media->id, $media->name);
 
         return redirect()->route('admin.media.index')
-            ->with('success', 'File uploaded successfully.');
+            ->with('success', __('messages.msg_file_uploaded'));
     }
 
     public function destroy(MediaFile $media): RedirectResponse
@@ -89,7 +89,7 @@ class MediaController extends Controller
         $this->storageService->delete($media);
 
         return redirect()->route('admin.media.index')
-            ->with('success', 'File deleted successfully.');
+            ->with('success', __('messages.msg_file_deleted'));
     }
 
     public function sync(Request $request): RedirectResponse
@@ -105,6 +105,6 @@ class MediaController extends Controller
         $this->logger->log('sync', "Media sync completed: {$results['created']} created, {$results['skipped']} skipped for course '{$course->title}'");
 
         return redirect()->route('admin.media.index', ['course_id' => $course->id])
-            ->with('success', "Sync complete. {$results['created']} files added, {$results['skipped']} skipped.");
+            ->with('success', __('messages.msg_sync_complete', ['created' => $results['created'], 'skipped' => $results['skipped']]));
     }
 }

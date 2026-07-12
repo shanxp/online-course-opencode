@@ -31,7 +31,7 @@ class LoginController extends Controller
 
         if ($user) {
             if ($user->is_active === false) {
-                return back()->withErrors(['username' => 'Your account has been deactivated.']);
+                return back()->withErrors(['username' => __('messages.msg_account_deactivated')]);
             }
 
             if (Auth::attempt([
@@ -60,7 +60,7 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            'username' => 'The provided credentials do not match our records.',
+            'username' => __('messages.msg_invalid_credentials'),
         ])->onlyInput('username');
     }
 

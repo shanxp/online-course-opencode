@@ -56,7 +56,7 @@ class PermissionController extends Controller
         $this->logger->log('group_created', "Group '{$validated['name']}' created");
 
         return redirect()->route('admin.permissions.index')
-            ->with('success', 'Group created successfully.');
+            ->with('success', __('messages.msg_group_created'));
     }
 
     public function update(Request $request, Group $group): RedirectResponse
@@ -71,7 +71,7 @@ class PermissionController extends Controller
         $this->logger->log('group_updated', "Group '{$validated['name']}' updated");
 
         return redirect()->route('admin.permissions.index')
-            ->with('success', 'Group updated successfully.');
+            ->with('success', __('messages.msg_group_updated'));
     }
 
     public function destroy(Group $group): RedirectResponse
@@ -80,7 +80,7 @@ class PermissionController extends Controller
         $group->delete();
 
         return redirect()->route('admin.permissions.index')
-            ->with('success', 'Group deleted successfully.');
+            ->with('success', __('messages.msg_group_deleted'));
     }
 
     public function addUser(Request $request, Group $group): RedirectResponse
@@ -93,7 +93,7 @@ class PermissionController extends Controller
 
         if (empty($userIds)) {
             return redirect()->route('admin.permissions.index', ['group_id' => $group->id])
-                ->with('error', 'Please select at least one user.');
+                ->with('error', __('messages.msg_select_users'));
         }
 
         $group->users()->syncWithoutDetaching($userIds);
@@ -103,7 +103,7 @@ class PermissionController extends Controller
         $this->logger->log('group_user_added', "Users '{$names}' added to group '{$group->name}'");
 
         return redirect()->route('admin.permissions.index', ['group_id' => $group->id])
-            ->with('success', count($users) . ' user(s) added to group.');
+            ->with('success', __('messages.msg_users_added', ['count' => count($users)]));
     }
 
     public function removeUser(Request $request, Group $group): RedirectResponse
@@ -118,7 +118,7 @@ class PermissionController extends Controller
         $this->logger->log('group_user_removed', "User '{$user->name}' removed from group '{$group->name}'");
 
         return redirect()->route('admin.permissions.index', ['group_id' => $group->id])
-            ->with('success', 'User removed from group.');
+            ->with('success', __('messages.msg_user_removed'));
     }
 
     public function addCourse(Request $request, Group $group): RedirectResponse
@@ -136,7 +136,7 @@ class PermissionController extends Controller
         $this->logger->log('group_course_added', "Course '{$course->title}' ({$validated['permission']}) added to group '{$group->name}'");
 
         return redirect()->route('admin.permissions.index', ['group_id' => $group->id])
-            ->with('success', 'Course permission added to group.');
+            ->with('success', __('messages.msg_course_perm_added'));
     }
 
     public function removeCourse(Request $request, Group $group): RedirectResponse
@@ -148,7 +148,7 @@ class PermissionController extends Controller
         $group->courses()->detach($validated['course_id']);
 
         return redirect()->route('admin.permissions.index', ['group_id' => $group->id])
-            ->with('success', 'Course permission removed from group.');
+            ->with('success', __('messages.msg_course_perm_removed'));
     }
 
     public function addFolder(Request $request, Group $group): RedirectResponse
@@ -162,7 +162,7 @@ class PermissionController extends Controller
 
         if (empty($folderIds)) {
             return redirect()->route('admin.permissions.index', ['group_id' => $group->id])
-                ->with('error', 'Please select at least one folder.');
+                ->with('error', __('messages.msg_select_folders'));
         }
 
         $attach = [];
@@ -178,7 +178,7 @@ class PermissionController extends Controller
         $this->logger->log('group_folder_added', "Folders '{$names}' ({$validated['permission']}) added to group '{$group->name}'");
 
         return redirect()->route('admin.permissions.index', ['group_id' => $group->id])
-            ->with('success', count($folders) . ' folder permission(s) added to group.');
+            ->with('success', __('messages.msg_folder_perms_added', ['count' => count($folders)]));
     }
 
     public function removeFolder(Request $request, Group $group): RedirectResponse
@@ -190,7 +190,7 @@ class PermissionController extends Controller
         $group->folders()->detach($validated['folder_id']);
 
         return redirect()->route('admin.permissions.index', ['group_id' => $group->id])
-            ->with('success', 'Folder permission removed from group.');
+            ->with('success', __('messages.msg_folder_perm_removed'));
     }
 
     private function buildFolderTree(): array
