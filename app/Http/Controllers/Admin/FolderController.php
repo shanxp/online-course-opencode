@@ -44,7 +44,17 @@ class FolderController extends Controller
 
     public function store(StoreFolderRequest $request): RedirectResponse
     {
-        $folder = Folder::create($request->validated());
+        $data = $request->validated();
+
+        // Place new folders at the top (sort_order = 0), shift siblings down
+        $data['sort_order'] = 0;
+
+        Folder::where('course_id', $data['course_id'])
+            ->where('parent_id', $data['parent_id'] ?? null)
+            ->where('is_sticky', false)
+            ->increment('sort_order');
+
+        $folder = Folder::create($data);
 
         $this->logger->logCreated('folder', $folder->id, $folder->name);
 
