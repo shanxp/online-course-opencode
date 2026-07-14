@@ -49,13 +49,19 @@ Route::middleware('auth')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::resource('courses', CourseController::class);
+        Route::post('courses/{course}/move-up', [CourseController::class, 'moveUp'])->name('courses.move-up');
+        Route::post('courses/{course}/move-down', [CourseController::class, 'moveDown'])->name('courses.move-down');
         Route::post('folders/{folder}/move-up', [FolderController::class, 'moveUp'])->name('folders.move-up');
         Route::post('folders/{folder}/move-down', [FolderController::class, 'moveDown'])->name('folders.move-down');
         Route::post('folders/{folder}/toggle-sticky', [FolderController::class, 'toggleSticky'])->name('folders.toggle-sticky');
         Route::resource('folders', FolderController::class)->except(['show']);
         Route::resource('media', MediaController::class)->except(['show', 'edit', 'update']);
         Route::post('media/sync', [MediaController::class, 'sync'])->name('media.sync');
+        Route::post('media/{media}/move-up', [MediaController::class, 'moveUp'])->name('media.move-up');
+        Route::post('media/{media}/move-down', [MediaController::class, 'moveDown'])->name('media.move-down');
         Route::resource('youtube-videos', YouTubeController::class)->except(['show']);
+        Route::post('youtube-videos/{youtube_video}/move-up', [YouTubeController::class, 'moveUp'])->name('youtube-videos.move-up');
+        Route::post('youtube-videos/{youtube_video}/move-down', [YouTubeController::class, 'moveDown'])->name('youtube-videos.move-down');
         Route::get('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
         Route::get('users/{user}', fn(User $user) => redirect()->route('admin.users.edit', $user))->name('users.show');
         Route::resource('users', UserController::class)->except(['show']);

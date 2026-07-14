@@ -23,6 +23,7 @@
                         <th class="px-6 py-3">{{ __('messages.folders_col') }}</th>
                         <th class="px-6 py-3">{{ __('messages.status_col') }}</th>
                         <th class="px-6 py-3">{{ __('messages.homepage_col') }}</th>
+                        <th class="px-6 py-3">{{ __('messages.sort_order_col') }}</th>
                         <th class="px-6 py-3">{{ __('messages.created_at_col') }}</th>
                         <th class="px-6 py-3">{{ __('messages.actions_col') }}</th>
                     </tr>
@@ -50,6 +51,22 @@
                                 @else
                                     <span class="text-xs text-gray-400">{{ __('messages.hidden') }}</span>
                                 @endif
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-1">
+                                    <form method="POST" action="{{ route('admin.courses.move-up', $course) }}" class="inline">
+                                        @csrf
+                                        <button type="submit" class="p-0.5 text-gray-400 hover:text-gray-600 cursor-pointer" title="{{ __('messages.move_up') }}">
+                                            <svg class="w-3.5 h-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ route('admin.courses.move-down', $course) }}" class="inline">
+                                        @csrf
+                                        <button type="submit" class="p-0.5 text-gray-400 hover:text-gray-600 cursor-pointer" title="{{ __('messages.move_down') }}">
+                                            <svg class="w-3.5 h-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-gray-500 text-xs">{{ $course->created_at->format('M d, Y H:i') }}</td>
                             <td class="px-6 py-4">

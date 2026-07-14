@@ -14,9 +14,9 @@ class StoreYouTubeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'youtube_id' => ['required', 'string', 'max:50'],
+            'youtube_id' => ['nullable', 'string', 'max:50'],
             'url' => ['required', 'url', 'max:500'],
             'course_id' => ['required', 'exists:courses,id'],
             'folder_id' => ['nullable', 'exists:folders,id'],

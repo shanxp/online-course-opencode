@@ -106,4 +106,46 @@ class CourseController extends Controller
         return redirect()->route('admin.courses.index')
             ->with('success', __('messages.msg_course_deleted'));
     }
+
+    public function moveUp(Course $course): RedirectResponse
+    {
+        $previous = Course::where('sort_order', '<', $course->sort_order)
+            ->orderByDesc('sort_order')
+            ->first();
+
+        if (!$previous) {
+            return redirect()->route('admin.courses.index')
+                ->with('error', __('messages.msg_course_at_top'));
+        }
+
+        $temp = $course->sort_order;
+        $course->updateQuietly(['sort_order' => $previous->sort_order]);
+        $previous->updateQuietly(['sort_order' => $temp]);
+
+        $this->logger->logUpdated('course', $course->id, "{$course->title} moved up");
+
+        return redirect()->route('admin.courses.index')
+            ->with('success', __('messages.msg_course_moved_up'));
+    }
+
+    public function moveDown(Course $course): RedirectResponse
+    {
+        $next = Course::where('sort_order', '>', $course->sort_order)
+            ->orderBy('sort_order')
+            ->first();
+
+        if (!$next) {
+            return redirect()->route('admin.courses.index')
+                ->with('error', __('messages.msg_course_at_bottom'));
+        }
+
+        $temp = $course->sort_order;
+        $course->updateQuietly(['sort_order' => $next->sort_order]);
+        $next->updateQuietly(['sort_order' => $temp]);
+
+        $this->logger->logUpdated('course', $course->id, "{$course->title} moved down");
+
+        return redirect()->route('admin.courses.index')
+            ->with('success', __('messages.msg_course_moved_down'));
+    }
 }

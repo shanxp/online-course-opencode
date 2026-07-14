@@ -13,12 +13,36 @@ class MediaFile extends Model
         'path',
         'type',
         'size',
+        'sort_order',
         'mime_type',
         'duration',
         'disk',
         'folder_id',
         'course_id',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'sort_order' => 'integer',
+        ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (MediaFile $media) {
+            if ($media->sort_order === null) {
+                $query = static::where('course_id', $media->course_id);
+                $media->folder_id ? $query->where('folder_id', $media->folder_id) : $query->whereNull('folder_id');
+                $media->sort_order = $query->max('sort_order') + 1;
+            }
+        });
+    }
+
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('sort_order');
+    }
 
     public function course(): BelongsTo
     {

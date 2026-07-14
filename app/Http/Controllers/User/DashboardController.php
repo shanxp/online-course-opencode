@@ -16,7 +16,7 @@ class DashboardController extends Controller
         $sort = $request->get('sort', 'newest');
 
         $courses = match ($sort) {
-            'default' => $courses->get(),
+            'default' => $courses->orderBy('sort_order')->orderBy('title')->get(),
             'title_asc' => $courses->orderBy('title')->get(),
             'title_desc' => $courses->orderBy('title', 'desc')->get(),
             'newest' => $courses->orderBy('created_at', 'desc')->get(),

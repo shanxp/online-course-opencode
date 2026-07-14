@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -23,6 +24,22 @@ class YouTubeVideo extends Model
         return [
             'sort_order' => 'integer',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (YouTubeVideo $video) {
+            if ($video->sort_order === null) {
+                $query = static::where('course_id', $video->course_id);
+                $video->folder_id ? $query->where('folder_id', $video->folder_id) : $query->whereNull('folder_id');
+                $video->sort_order = $query->max('sort_order') + 1;
+            }
+        });
+    }
+
+    public function scopeOrdered(Builder $query): Builder
+    {
+        return $query->orderBy('sort_order');
     }
 
     public function course(): BelongsTo

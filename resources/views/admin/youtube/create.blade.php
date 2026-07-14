@@ -28,17 +28,30 @@
             </div>
 
             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('messages.folder') }} ({{ __('messages.optional') }})</label>
+                @if($selectedCourseId && $folderOptions)
+                    <x-searchable-select name="folder_id" :options="$folderOptions" :placeholder="__('messages.search_folders')" displayField="display_name" />
+                @else
+                    <select name="folder_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-base px-4 py-3">
+                        <option value="">{{ __('messages.select_course_first') }}</option>
+                    </select>
+                @endif
+                @error('folder_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+
+            <div>
                 <label for="title" class="block text-sm font-medium text-gray-700">{{ __('messages.title') }}</label>
-                <input type="text" name="title" id="title" value="{{ old('title') }}" required
+                <input type="text" name="title" id="title" value="{{ old('title') }}"
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-base px-4 py-3">
                 @error('title') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
 
             <div>
                 <label for="youtube_id" class="block text-sm font-medium text-gray-700">{{ __('messages.youtube_id') }}</label>
-                <input type="text" name="youtube_id" id="youtube_id" value="{{ old('youtube_id') }}" required
+                <input type="text" name="youtube_id" id="youtube_id" value="{{ old('youtube_id') }}"
                        placeholder="{{ __('messages.youtube_id_placeholder') }}"
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-base px-4 py-3">
+                <p class="mt-1 text-xs text-gray-500">{{ __('messages.youtube_id_optional') }}</p>
                 @error('youtube_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
 

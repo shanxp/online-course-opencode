@@ -83,12 +83,19 @@ class Folder extends Model
 
     public function mediaFiles(): HasMany
     {
-        return $this->hasMany(MediaFile::class);
+        return $this->hasMany(MediaFile::class)->orderBy('sort_order');
     }
 
     public function youtubeVideos(): HasMany
     {
-        return $this->hasMany(YouTubeVideo::class);
+        return $this->hasMany(YouTubeVideo::class)->orderBy('sort_order');
+    }
+
+    public function mergedContents(): \Illuminate\Support\Collection
+    {
+        $media = $this->mediaFiles->map(fn($m) => ['item' => $m, 'sort' => $m->sort_order ?? 0, 'kind' => 'media']);
+        $youtube = $this->youtubeVideos->map(fn($y) => ['item' => $y, 'sort' => $y->sort_order ?? 0, 'kind' => 'youtube']);
+        return $media->concat($youtube)->sortBy('sort')->values();
     }
 
     public function groups(): BelongsToMany

@@ -56,7 +56,7 @@
     @click.away="open = false"
     class="relative"
 >
-    <input type="hidden" name="{{ $name }}" :value="selectedId ?? '0'">
+    <input type="hidden" name="{{ $name }}" :value="selectedId ?? ''">
 
     <template x-if="!selectedId">
         <div class="relative">
