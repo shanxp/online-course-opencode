@@ -55,7 +55,7 @@ Route::middleware('auth')->group(function () {
         Route::post('folders/{folder}/move-down', [FolderController::class, 'moveDown'])->name('folders.move-down');
         Route::post('folders/{folder}/toggle-sticky', [FolderController::class, 'toggleSticky'])->name('folders.toggle-sticky');
         Route::resource('folders', FolderController::class)->except(['show']);
-        Route::resource('media', MediaController::class)->except(['show', 'edit', 'update']);
+        Route::resource('media', MediaController::class)->except(['show'])->parameters(['media' => 'media']);
         Route::post('media/sync', [MediaController::class, 'sync'])->name('media.sync');
         Route::post('media/{media}/move-up', [MediaController::class, 'moveUp'])->name('media.move-up');
         Route::post('media/{media}/move-down', [MediaController::class, 'moveDown'])->name('media.move-down');

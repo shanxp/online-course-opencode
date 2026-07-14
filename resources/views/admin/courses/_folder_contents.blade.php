@@ -4,9 +4,35 @@
     @php $item = $content['item']; $kind = $content['kind']; @endphp
 
     @if($kind === 'media' && $item->type === 'mp3')
-        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
-            <div class="flex items-center gap-3 w-full">
+        <div class="p-3 bg-gray-50 rounded-lg border">
+            <div class="flex items-center gap-3 mb-2">
+                <svg class="w-8 h-8 text-primary-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                </svg>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900">{{ $item->name }}</p>
+                    <p class="text-xs text-gray-500">{{ strtoupper($item->type) }} - {{ round($item->size / 1024) }} {{ __('messages.kb') }}</p>
+                </div>
+                <form method="POST" action="{{ route('admin.media.move-up', $item) }}" class="inline shrink-0">
+                    @csrf
+                    <button type="submit" class="p-0.5 text-gray-400 hover:text-gray-600 cursor-pointer" title="{{ __('messages.move_up') }}">
+                        <svg class="w-3.5 h-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                    </button>
+                </form>
+                <form method="POST" action="{{ route('admin.media.move-down', $item) }}" class="inline shrink-0">
+                    @csrf
+                    <button type="submit" class="p-0.5 text-gray-400 hover:text-gray-600 cursor-pointer" title="{{ __('messages.move_down') }}">
+                        <svg class="w-3.5 h-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                </form>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
                 <x-audio-player :media="$item" />
+                <a href="{{ route('admin.media.edit', $item) }}" class="shrink-0 text-xs text-gray-500 hover:text-gray-700">{{ __('messages.edit') }}</a>
+                <form method="POST" action="{{ route('admin.media.destroy', $item) }}" class="inline shrink-0">
+                    @csrf @method('DELETE')
+                    <button type="button" @click.prevent="$dispatch('confirm-open', { action: '{{ route('admin.media.destroy', $item) }}', method: 'DELETE', message: '{{ __('messages.confirm_delete') }}' })" class="text-xs text-red-600 hover:text-red-800 cursor-pointer">{{ __('messages.delete') }}</button>
+                </form>
             </div>
         </div>
     @elseif($kind === 'media')
@@ -31,6 +57,7 @@
                         <svg class="w-3.5 h-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                 </form>
+                <a href="{{ route('admin.media.edit', $item) }}" class="shrink-0 text-xs text-gray-500 hover:text-gray-700">{{ __('messages.edit') }}</a>
                 <a href="{{ route('media.download', $item) }}"
                    class="shrink-0 px-3 py-1.5 text-xs font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700">{{ __('messages.download') }}</a>
                 <form method="POST" action="{{ route('admin.media.destroy', $item) }}" class="inline shrink-0">

@@ -310,6 +310,8 @@ return [
     'msg_folder_unpinned' => 'Ordner losgelöst.',
     'msg_file_uploaded' => 'Datei erfolgreich hochgeladen.',
     'msg_file_deleted' => 'Datei erfolgreich gelöscht.',
+    'msg_file_updated' => 'Datei erfolgreich aktualisiert.',
+    'edit_media' => 'Medien bearbeiten',
     'msg_youtube_added' => 'YouTube-Video erfolgreich hinzugefügt.',
     'msg_youtube_updated' => 'YouTube-Video erfolgreich aktualisiert.',
     'msg_youtube_deleted' => 'YouTube-Video erfolgreich gelöscht.',

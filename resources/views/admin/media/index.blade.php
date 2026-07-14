@@ -68,6 +68,7 @@
                             <td class="px-6 py-4 text-gray-600">{{ $file->course->title }}</td>
                             <td class="px-6 py-4 text-gray-600">{{ round($file->size / 1024) }} {{ __('messages.kb') }}</td>
                             <td class="px-6 py-4">
+                                <a href="{{ route('admin.media.edit', $file) }}" class="text-gray-500 hover:text-gray-700 mr-3">{{ __('messages.edit') }}</a>
                                 <a href="{{ route('media.download', $file) }}" class="text-primary-600 hover:text-primary-900 mr-3">{{ __('messages.download') }}</a>
                                 <form method="POST" action="{{ route('admin.media.destroy', $file) }}" class="inline">
                                     @csrf @method('DELETE')

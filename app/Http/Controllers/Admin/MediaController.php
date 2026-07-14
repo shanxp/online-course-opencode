@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMediaRequest;
+use App\Http\Requests\UpdateMediaRequest;
 use App\Models\Course;
 use App\Models\Folder;
 use App\Models\MediaFile;
@@ -108,6 +109,33 @@ class MediaController extends Controller
 
         return redirect()->route('admin.media.index', ['course_id' => $course->id])
             ->with('success', __('messages.msg_sync_complete', ['created' => $results['created'], 'skipped' => $results['skipped']]));
+    }
+
+    public function edit(MediaFile $media): View
+    {
+        $courses = Course::orderBy('title')->get();
+        $folderOptions = collect();
+
+        $allFolders = Folder::where('course_id', $media->course_id)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+        $folderOptions = $this->buildFolderTree($allFolders);
+
+        return view('admin.media.edit', compact('media', 'courses', 'folderOptions'));
+    }
+
+    public function update(UpdateMediaRequest $request, MediaFile $media): RedirectResponse
+    {
+        $data = $request->validated();
+
+        $media->update($data);
+
+        $this->logger->logUpdated('media_file', $media->id, $media->name);
+
+        return redirect()->route('admin.media.index')
+            ->with('success', __('messages.msg_file_updated'));
     }
 
     public function moveUp(MediaFile $media): RedirectResponse

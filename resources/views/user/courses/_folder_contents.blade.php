@@ -6,10 +6,17 @@
     @php $item = $content['item']; $kind = $content['kind']; @endphp
 
     @if($kind === 'media' && $item->type === 'mp3')
-        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
-            <div class="flex items-center gap-3 w-full">
-                <x-audio-player :media="$item" />
+        <div class="p-3 bg-gray-50 rounded-lg border">
+            <div class="flex items-center gap-3 mb-2">
+                <svg class="w-8 h-8 text-primary-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                </svg>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900">{{ $item->name }}</p>
+                    <p class="text-xs text-gray-500">{{ strtoupper($item->type) }} - {{ round($item->size / 1024) }} {{ __('messages.kb') }}</p>
+                </div>
             </div>
+            <x-audio-player :media="$item" />
         </div>
     @elseif($kind === 'media')
         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">

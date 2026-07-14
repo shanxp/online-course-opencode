@@ -310,6 +310,8 @@ return [
     'msg_folder_unpinned' => 'Folder unpinned.',
     'msg_file_uploaded' => 'File uploaded successfully.',
     'msg_file_deleted' => 'File deleted successfully.',
+    'msg_file_updated' => 'File updated successfully.',
+    'edit_media' => 'Edit Media',
     'msg_youtube_added' => 'YouTube video added successfully.',
     'msg_youtube_updated' => 'YouTube video updated successfully.',
     'msg_youtube_deleted' => 'YouTube video deleted successfully.',
