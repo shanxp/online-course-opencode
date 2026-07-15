@@ -100,22 +100,28 @@
 @endforeach
 
 @foreach($folder->children as $child)
-    <div class="ml-6 border-l-2 border-gray-200 pl-4">
-        <div class="flex items-center justify-between mb-2">
+    <div x-data="{ open: false }" class="ml-6 border-l-2 border-gray-200 pl-4">
+        <div @click="open = !open" class="flex items-center justify-between cursor-pointer hover:bg-gray-50 transition py-1">
             <div>
                 <h4 class="text-base font-bold text-gray-900">{{ $child->name }}</h4>
                 <p class="text-xs text-gray-400">{{ $child->created_at->format('M d, Y H:i') }} &middot; {{ __('messages.updated_at_col') }}: {{ $child->updated_at->format('M d, Y H:i') }}</p>
             </div>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-2">
+                <svg x-show="!open" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <svg x-show="open" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+        </div>
+        <div x-show="open" x-collapse>
+            <div class="flex items-center gap-1 my-2">
                 <form method="POST" action="{{ route('admin.folders.move-up', $child) }}" class="inline">
                     @csrf
-                    <button class="p-0.5 text-gray-400 hover:text-gray-600 cursor-pointer" title="{{ __('messages.move_up') }}">
+                    <button @click.stop class="p-0.5 text-gray-400 hover:text-gray-600 cursor-pointer" title="{{ __('messages.move_up') }}">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
                     </button>
                 </form>
                 <form method="POST" action="{{ route('admin.folders.move-down', $child) }}" class="inline">
                     @csrf
-                    <button class="p-0.5 text-gray-400 hover:text-gray-600 cursor-pointer" title="{{ __('messages.move_down') }}">
+                    <button @click.stop class="p-0.5 text-gray-400 hover:text-gray-600 cursor-pointer" title="{{ __('messages.move_down') }}">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                 </form>
@@ -126,12 +132,12 @@
                    class="text-xs text-primary-600 hover:text-primary-900 ml-1">{{ __('messages.add_sub') }}</a>
                 <form method="POST" action="{{ route('admin.folders.destroy', $child) }}" class="inline ml-1">
                     @csrf @method('DELETE')
-                    <button type="button" @click.prevent="$dispatch('confirm-open', { action: '{{ route('admin.folders.destroy', $child) }}', method: 'DELETE', message: '{{ __('messages.confirm_delete_folder') }}' })" class="text-xs text-red-600 hover:text-red-800 cursor-pointer">{{ __('messages.delete') }}</button>
+                    <button type="button" @click.stop="$dispatch('confirm-open', { action: '{{ route('admin.folders.destroy', $child) }}', method: 'DELETE', message: '{{ __('messages.confirm_delete_folder') }}' })" class="text-xs text-red-600 hover:text-red-800 cursor-pointer">{{ __('messages.delete') }}</button>
                 </form>
             </div>
-        </div>
-        <div class="space-y-3">
-            @include('admin.courses._folder_contents', ['folder' => $child])
+            <div class="space-y-3">
+                @include('admin.courses._folder_contents', ['folder' => $child])
+            </div>
         </div>
     </div>
 @endforeach

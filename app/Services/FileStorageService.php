@@ -25,15 +25,52 @@ class FileStorageService
         ]);
     }
 
+    public function storeFromPath(array $data): MediaFile
+    {
+        $path = $data['path'];
+
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+        if (!in_array($extension, ['mp3', 'pdf'])) {
+            throw new \InvalidArgumentException(__('messages.msg_invalid_file_type') . ' (' . $path . ')');
+        }
+
+        $type = $extension === 'mp3' ? 'mp3' : 'pdf';
+        $mime = $type === 'mp3' ? 'audio/mpeg' : 'application/pdf';
+        $size = file_exists($path) ? filesize($path) : 0;
+
+        return MediaFile::create([
+            'name' => $data['name'] ?? pathinfo($path, PATHINFO_FILENAME),
+            'original_name' => basename($path),
+            'path' => $path,
+            'type' => $type,
+            'size' => $size,
+            'mime_type' => $mime,
+            'disk' => 'local',
+            'folder_id' => $data['folder_id'] ?? null,
+            'course_id' => $data['course_id'],
+        ]);
+    }
+
     public function delete(MediaFile $media): bool
     {
-        Storage::disk($media->disk)->delete($media->path);
+        if (!str_starts_with($media->path, '/')) {
+            Storage::disk($media->disk)->delete($media->path);
+        }
         return $media->delete();
+    }
+
+    private function resolvePath(MediaFile $media): string
+    {
+        if (str_starts_with($media->path, '/')) {
+            return $media->path;
+        }
+        return Storage::disk($media->disk)->path($media->path);
     }
 
     public function stream(MediaFile $media)
     {
-        $path = Storage::disk($media->disk)->path($media->path);
+        $path = $this->resolvePath($media);
 
         if (!file_exists($path)) {
             abort(404);
@@ -57,7 +94,7 @@ class FileStorageService
 
     public function download(MediaFile $media)
     {
-        $path = Storage::disk($media->disk)->path($media->path);
+        $path = $this->resolvePath($media);
 
         if (!file_exists($path)) {
             abort(404);

@@ -9,11 +9,32 @@
         <form method="POST" action="{{ route('admin.media.store') }}" enctype="multipart/form-data" class="bg-white rounded-lg shadow p-6 space-y-6">
             @csrf
 
-            <div>
-                <label for="file" class="block text-sm font-medium text-gray-700">{{ __('messages.file') }}</label>
-                <input type="file" name="file" id="file" required accept=".mp3,.pdf,audio/mpeg,application/pdf"
-                       class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100">
-                @error('file') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            <div x-data="{ source: 'upload' }">
+                <div class="flex items-center gap-4 mb-4">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="source" value="upload" x-model="source" class="text-primary-600">
+                        <span class="ml-2 text-sm text-gray-700">{{ __('messages.upload_file') }}</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="source" value="path" x-model="source" class="text-primary-600">
+                        <span class="ml-2 text-sm text-gray-700">{{ __('messages.server_path') }}</span>
+                    </label>
+                </div>
+
+                <div x-show="source === 'upload'">
+                    <label for="file" class="block text-sm font-medium text-gray-700">{{ __('messages.file') }}</label>
+                    <input type="file" name="file" id="file" accept=".mp3,.pdf,audio/mpeg,application/pdf"
+                           class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100">
+                    @error('file') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                </div>
+
+                <div x-show="source === 'path'">
+                    <label for="path" class="block text-sm font-medium text-gray-700">{{ __('messages.path') }}</label>
+                    <input type="text" name="path" id="path" value="{{ old('path') }}"
+                           placeholder="/absolute/path/file.mp3 or relative/path/file.mp3"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-base px-4 py-3">
+                    @error('path') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                </div>
             </div>
 
             <div>

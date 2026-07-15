@@ -78,7 +78,13 @@ class MediaController extends Controller
 
     public function store(StoreMediaRequest $request): RedirectResponse
     {
-        $media = $this->storageService->store($request->file('file'), $request->validated());
+        $data = $request->validated();
+
+        if ($request->has('path') && $request->filled('path')) {
+            $media = $this->storageService->storeFromPath($data);
+        } else {
+            $media = $this->storageService->store($request->file('file'), $data);
+        }
 
         $this->logger->logCreated('media_file', $media->id, $media->name);
 

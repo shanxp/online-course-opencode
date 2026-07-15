@@ -49,14 +49,16 @@
 @endforeach
 
 @foreach($folder->children->filter($canSee) as $child)
-    <div class="ml-6 border-l-2 border-gray-200 pl-4">
-        <div class="flex items-center justify-between mb-2">
+    <div x-data="{ open: false }" class="ml-6 border-l-2 border-gray-200 pl-4">
+        <div @click="open = !open" class="flex items-center justify-between cursor-pointer hover:bg-gray-50 transition py-1">
             <div>
-                    <h4 class="text-base font-bold text-gray-900">{{ $child->name }}</h4>
+                <h4 class="text-base font-bold text-gray-900">{{ $child->name }}</h4>
                 <p class="text-xs text-gray-400">{{ $child->created_at->format('M d, Y H:i') }}</p>
             </div>
+            <svg x-show="!open" class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <svg x-show="open" class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
         </div>
-        <div class="space-y-3">
+        <div x-show="open" x-collapse class="space-y-3">
             @include('user.courses._folder_contents', ['folder' => $child, 'accessibleFolderIds' => $accessibleFolderIds])
         </div>
     </div>
