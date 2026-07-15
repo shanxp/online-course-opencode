@@ -19,9 +19,9 @@
         @forelse($courses as $course)
             <a href="{{ route('courses.show', $course) }}" class="block bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition group">
                 @if($course->thumbnail)
-                    <img src="{{ Storage::url($course->thumbnail) }}" class="w-full h-40 object-cover">
+                    <img src="{{ Storage::url($course->thumbnail) }}" class="w-full h-48 sm:h-56 object-cover">
                 @else
-                    <div class="w-full h-40 bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center">
+                    <div class="w-full h-48 sm:h-56 bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center">
                         <span class="text-3xl font-bold text-white">{{ substr($course->title, 0, 2) }}</span>
                     </div>
                 @endif
