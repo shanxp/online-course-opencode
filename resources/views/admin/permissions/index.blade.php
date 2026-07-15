@@ -81,11 +81,7 @@
                                     @foreach($group->users as $member)
                                         <div class="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-md gap-3">
                                             <span class="text-sm truncate min-w-0">{{ $member->name }} <span class="text-gray-500">({{ $member->email }})</span></span>
-                                            <form method="POST" action="{{ route('admin.permissions.remove-user', $group) }}">
-                                                @csrf
-                                                <input type="hidden" name="user_id" value="{{ $member->id }}">
-                                                <button type="button" @click.prevent="$dispatch('confirm-open', { action: '{{ route('admin.permissions.remove-user', $group) }}', method: 'POST', message: '{{ __('messages.confirm_remove_user') }}' })" class="text-xs text-red-600 hover:text-red-800 cursor-pointer">{{ __('messages.remove_from_group') }}</button>
-                                            </form>
+                                            <button type="button" @click.prevent="$dispatch('confirm-open', { action: '{{ route('admin.permissions.remove-user', [$group, $member->id]) }}', method: 'POST', message: '{{ __('messages.confirm_remove_user') }}' })" class="text-xs text-red-600 hover:text-red-800 cursor-pointer">{{ __('messages.remove_from_group') }}</button>
                                         </div>
                                     @endforeach
                                 </div>
@@ -114,11 +110,7 @@
                                     @foreach($group->courses as $perm)
                                         <div class="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-md gap-3">
                                             <span class="text-sm truncate min-w-0">{{ $perm->title }} - <span class="text-primary-600 font-medium">{{ __('messages.permission_' . $perm->pivot->permission) }}</span></span>
-                                            <form method="POST" action="{{ route('admin.permissions.remove-course', $group) }}">
-                                                @csrf
-                                                <input type="hidden" name="course_id" value="{{ $perm->id }}">
-                                                <button type="button" @click.prevent="$dispatch('confirm-open', { action: '{{ route('admin.permissions.remove-course', $group) }}', method: 'POST', message: '{{ __('messages.confirm_revoke_course') }}' })" class="text-xs text-red-600 hover:text-red-800 cursor-pointer">{{ __('messages.revoke') }}</button>
-                                            </form>
+                                            <button type="button" @click.prevent="$dispatch('confirm-open', { action: '{{ route('admin.permissions.remove-course', [$group, $perm->id]) }}', method: 'POST', message: '{{ __('messages.confirm_revoke_course') }}' })" class="text-xs text-red-600 hover:text-red-800 cursor-pointer">{{ __('messages.revoke') }}</button>
                                         </div>
                                     @endforeach
                                 </div>
@@ -156,11 +148,7 @@
                                                 @endif
                                                 - <span class="text-primary-600 font-medium">{{ __('messages.permission_' . $perm->pivot->permission) }}</span>
                                             </span>
-                                            <form method="POST" action="{{ route('admin.permissions.remove-folder', $group) }}">
-                                                @csrf
-                                                <input type="hidden" name="folder_id" value="{{ $perm->id }}">
-                                                <button type="button" @click.prevent="$dispatch('confirm-open', { action: '{{ route('admin.permissions.remove-folder', $group) }}', method: 'POST', message: '{{ __('messages.confirm_revoke_folder') }}' })" class="text-xs text-red-600 hover:text-red-800 cursor-pointer">{{ __('messages.revoke') }}</button>
-                                            </form>
+                                            <button type="button" @click.prevent="$dispatch('confirm-open', { action: '{{ route('admin.permissions.remove-folder', [$group, $perm->id]) }}', method: 'POST', message: '{{ __('messages.confirm_revoke_folder') }}' })" class="text-xs text-red-600 hover:text-red-800 cursor-pointer">{{ __('messages.revoke') }}</button>
                                         </div>
                                     @endforeach
                                 </div>

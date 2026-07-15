@@ -71,11 +71,11 @@ Route::middleware('auth')->group(function () {
         Route::post('permissions/{group}', [PermissionController::class, 'update'])->name('permissions.update');
         Route::delete('permissions/{group}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
         Route::post('permissions/{group}/add-user', [PermissionController::class, 'addUser'])->name('permissions.add-user');
-        Route::post('permissions/{group}/remove-user', [PermissionController::class, 'removeUser'])->name('permissions.remove-user');
+        Route::post('permissions/{group}/remove-user/{user}', [PermissionController::class, 'removeUser'])->name('permissions.remove-user');
         Route::post('permissions/{group}/add-course', [PermissionController::class, 'addCourse'])->name('permissions.add-course');
-        Route::post('permissions/{group}/remove-course', [PermissionController::class, 'removeCourse'])->name('permissions.remove-course');
+        Route::post('permissions/{group}/remove-course/{course}', [PermissionController::class, 'removeCourse'])->name('permissions.remove-course');
         Route::post('permissions/{group}/add-folder', [PermissionController::class, 'addFolder'])->name('permissions.add-folder');
-        Route::post('permissions/{group}/remove-folder', [PermissionController::class, 'removeFolder'])->name('permissions.remove-folder');
+        Route::post('permissions/{group}/remove-folder/{folder}', [PermissionController::class, 'removeFolder'])->name('permissions.remove-folder');
 
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
         Route::resource('slideshow-images', SlideshowImageController::class)->except(['show']);

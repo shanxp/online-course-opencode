@@ -106,17 +106,10 @@ class PermissionController extends Controller
             ->with('success', __('messages.msg_users_added', ['count' => count($users)]));
     }
 
-    public function removeUser(Request $request, Group $group): RedirectResponse
+    public function removeUser(Group $group, User $user): RedirectResponse
     {
-        $validated = $request->validate([
-            'user_id' => ['required', 'exists:users,id'],
-        ]);
-
-        $group->users()->detach($validated['user_id']);
-
-        $user = User::find($validated['user_id']);
+        $group->users()->detach($user->id);
         $this->logger->log('group_user_removed', "User '{$user->name}' removed from group '{$group->name}'");
-
         return redirect()->route('admin.permissions.index', ['group_id' => $group->id])
             ->with('success', __('messages.msg_user_removed'));
     }
@@ -139,14 +132,9 @@ class PermissionController extends Controller
             ->with('success', __('messages.msg_course_perm_added'));
     }
 
-    public function removeCourse(Request $request, Group $group): RedirectResponse
+    public function removeCourse(Group $group, Course $course): RedirectResponse
     {
-        $validated = $request->validate([
-            'course_id' => ['required', 'exists:courses,id'],
-        ]);
-
-        $group->courses()->detach($validated['course_id']);
-
+        $group->courses()->detach($course->id);
         return redirect()->route('admin.permissions.index', ['group_id' => $group->id])
             ->with('success', __('messages.msg_course_perm_removed'));
     }
@@ -181,14 +169,9 @@ class PermissionController extends Controller
             ->with('success', __('messages.msg_folder_perms_added', ['count' => count($folders)]));
     }
 
-    public function removeFolder(Request $request, Group $group): RedirectResponse
+    public function removeFolder(Group $group, Folder $folder): RedirectResponse
     {
-        $validated = $request->validate([
-            'folder_id' => ['required', 'exists:folders,id'],
-        ]);
-
-        $group->folders()->detach($validated['folder_id']);
-
+        $group->folders()->detach($folder->id);
         return redirect()->route('admin.permissions.index', ['group_id' => $group->id])
             ->with('success', __('messages.msg_folder_perm_removed'));
     }
