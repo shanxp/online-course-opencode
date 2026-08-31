@@ -17,6 +17,7 @@ class MediaFile extends Model
         'mime_type',
         'duration',
         'disk',
+        'is_path',
         'folder_id',
         'course_id',
     ];
@@ -25,6 +26,7 @@ class MediaFile extends Model
     {
         return [
             'sort_order' => 'integer',
+            'is_path' => 'boolean',
         ];
     }
 

@@ -16,8 +16,7 @@
             @csrf @method('PUT')
 
             @php
-                $isPath = str_starts_with($media->path, '/');
-                $currentSource = old('source', $isPath ? 'path' : 'upload');
+                $currentSource = old('source', $media->is_path ? 'path' : 'upload');
             @endphp
 
             <div x-data="{ source: '{{ $currentSource }}' }">

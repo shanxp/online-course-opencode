@@ -20,6 +20,7 @@ class FileStorageService
             'size' => $file->getSize(),
             'mime_type' => $file->getMimeType(),
             'disk' => 'local',
+            'is_path' => false,
             'folder_id' => $data['folder_id'] ?? null,
             'course_id' => $data['course_id'],
         ]);
@@ -47,6 +48,7 @@ class FileStorageService
             'size' => $size,
             'mime_type' => $mime,
             'disk' => 'local',
+            'is_path' => true,
             'folder_id' => $data['folder_id'] ?? null,
             'course_id' => $data['course_id'],
         ]);
@@ -54,7 +56,7 @@ class FileStorageService
 
     public function delete(MediaFile $media): bool
     {
-        if (!str_starts_with($media->path, '/')) {
+        if (!$media->is_path) {
             Storage::disk($media->disk)->delete($media->path);
         }
         return $media->delete();
@@ -73,6 +75,7 @@ class FileStorageService
             'size' => $file->getSize(),
             'mime_type' => $file->getMimeType(),
             'disk' => 'local',
+            'is_path' => false,
             'name' => $data['name'] ?? $file->getClientOriginalName(),
             'folder_id' => $data['folder_id'] ?? $media->folder_id,
         ]);
@@ -101,6 +104,7 @@ class FileStorageService
             'size' => $size,
             'mime_type' => $mime,
             'disk' => 'local',
+            'is_path' => true,
             'name' => $data['name'] ?? $media->name,
             'folder_id' => $data['folder_id'] ?? $media->folder_id,
         ]);
@@ -110,14 +114,14 @@ class FileStorageService
 
     private function removeStoredFile(MediaFile $media): void
     {
-        if ($media->path && !str_starts_with($media->path, '/')) {
+        if ($media->path && !$media->is_path) {
             Storage::disk($media->disk)->delete($media->path);
         }
     }
 
     private function resolvePath(MediaFile $media): string
     {
-        if (str_starts_with($media->path, '/')) {
+        if ($media->is_path) {
             return $media->path;
         }
         return Storage::disk($media->disk)->path($media->path);
