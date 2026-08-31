@@ -135,12 +135,23 @@ class MediaController extends Controller
     public function update(UpdateMediaRequest $request, MediaFile $media): RedirectResponse
     {
         $data = $request->validated();
+        $source = $request->input('source');
 
-        $media->update($data);
+        if ($source === 'upload' && $request->hasFile('file')) {
+            $this->storageService->replaceWithUpload($media, $request->file('file'), $data);
+        } elseif ($source === 'path' && $request->filled('path') && $request->input('path') !== $media->path) {
+            $this->storageService->replaceWithPath($media, $request->input('path'), $data);
+        } else {
+            $media->update($data);
+        }
+
+        if (array_key_exists('size', $data) && $data['size'] !== null) {
+            $media->update(['size' => $data['size']]);
+        }
 
         $this->logger->logUpdated('media_file', $media->id, $media->name);
 
-        return redirect()->route('admin.media.index')
+        return redirect()->route('admin.media.index', ['course_id' => $media->course_id])
             ->with('success', __('messages.msg_file_updated'));
     }
 

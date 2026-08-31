@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Mail\NewAccountMail;
+use App\Mail\PasswordResetMail;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\ActivityLoggerService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use Illuminate\Support\Str;
 
@@ -57,9 +60,12 @@ class UserController extends Controller
     public function store(StoreUserRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        $data['password'] = bcrypt($data['password']);
+        $plainPassword = $data['password'];
+        $data['password'] = bcrypt($plainPassword);
 
         $user = User::create($data);
+
+        Mail::to($user->email)->send(new NewAccountMail($user, $plainPassword));
 
         $this->logger->logCreated('user', $user->id, $user->username);
 
@@ -111,6 +117,8 @@ class UserController extends Controller
         $user->password = bcrypt($newPassword);
         $user->old_password = null;
         $user->save();
+
+        Mail::to($user->email)->send(new PasswordResetMail($user, $newPassword));
 
         $this->logger->log('password_reset', "Password reset for user: {$user->username}");
 

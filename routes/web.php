@@ -63,8 +63,8 @@ Route::middleware('auth')->group(function () {
         Route::post('youtube-videos/{youtube_video}/move-up', [YouTubeController::class, 'moveUp'])->name('youtube-videos.move-up');
         Route::post('youtube-videos/{youtube_video}/move-down', [YouTubeController::class, 'moveDown'])->name('youtube-videos.move-down');
         Route::get('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
-        Route::get('users/{user}', fn(User $user) => redirect()->route('admin.users.edit', $user))->name('users.show');
         Route::resource('users', UserController::class)->except(['show']);
+        Route::get('users/{user}', fn(User $user) => redirect()->route('admin.users.edit', $user))->name('users.show');
 
         Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
         Route::post('permissions', [PermissionController::class, 'store'])->name('permissions.store');

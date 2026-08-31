@@ -60,6 +60,61 @@ class FileStorageService
         return $media->delete();
     }
 
+    public function replaceWithUpload(MediaFile $media, UploadedFile $file, array $data): MediaFile
+    {
+        $this->removeStoredFile($media);
+
+        $newPath = $file->store('media/' . $media->course_id, 'local');
+
+        $media->update([
+            'path' => $newPath,
+            'original_name' => $file->getClientOriginalName(),
+            'type' => $file->getClientOriginalExtension() === 'mp3' ? 'mp3' : 'pdf',
+            'size' => $file->getSize(),
+            'mime_type' => $file->getMimeType(),
+            'disk' => 'local',
+            'name' => $data['name'] ?? $file->getClientOriginalName(),
+            'folder_id' => $data['folder_id'] ?? $media->folder_id,
+        ]);
+
+        return $media;
+    }
+
+    public function replaceWithPath(MediaFile $media, string $path, array $data): MediaFile
+    {
+        $this->removeStoredFile($media);
+
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+        if (!in_array($extension, ['mp3', 'pdf'])) {
+            throw new \InvalidArgumentException(__('messages.msg_invalid_file_type') . ' (' . $path . ')');
+        }
+
+        $type = $extension === 'mp3' ? 'mp3' : 'pdf';
+        $mime = $type === 'mp3' ? 'audio/mpeg' : 'application/pdf';
+        $size = file_exists($path) ? filesize($path) : 0;
+
+        $media->update([
+            'path' => $path,
+            'original_name' => basename($path),
+            'type' => $type,
+            'size' => $size,
+            'mime_type' => $mime,
+            'disk' => 'local',
+            'name' => $data['name'] ?? $media->name,
+            'folder_id' => $data['folder_id'] ?? $media->folder_id,
+        ]);
+
+        return $media;
+    }
+
+    private function removeStoredFile(MediaFile $media): void
+    {
+        if ($media->path && !str_starts_with($media->path, '/')) {
+            Storage::disk($media->disk)->delete($media->path);
+        }
+    }
+
     private function resolvePath(MediaFile $media): string
     {
         if (str_starts_with($media->path, '/')) {
