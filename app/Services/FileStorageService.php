@@ -121,7 +121,7 @@ class FileStorageService
 
     private function resolvePath(MediaFile $media): string
     {
-        if ($media->is_path) {
+        if ($media->is_path && str_contains($media->path, 'http')) {
             return $media->path;
         }
         return Storage::disk($media->disk)->path($media->path);
@@ -130,7 +130,7 @@ class FileStorageService
     public function stream(MediaFile $media)
     {
         $path = $this->resolvePath($media);
-
+    
         if (!file_exists($path)) {
             abort(404);
         }

@@ -360,7 +360,7 @@ return [
     'mail_username' => 'Username',
     'mail_password' => 'Password',
     'mail_account_outro' => 'You can now log in and access your courses.',
-    'mail_account_signature' => 'Kind regards, <br />Myriam Abdel-Rahman Sherif <br />Samten Dargye Ling e.V.',
+    'mail_account_signature' => '',
     'leave_blank_keep_current_file' => 'Leave blank to keep the current file.',
     'size_bytes' => 'Size (Bytes)',
     'leave_blank_keep_current_size' => 'Leave empty to keep the current size.',
