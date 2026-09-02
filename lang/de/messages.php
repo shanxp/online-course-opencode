@@ -296,6 +296,7 @@ return [
     'slug_auto_generated' => 'Wird automatisch aus dem Titel generiert. Kann geändert werden. Muss eindeutig sein.',
     'msg_account_deactivated' => 'Ihr Konto wurde deaktiviert.',
     'msg_invalid_credentials' => 'Die eingegebenen Anmeldedaten stimmen nicht überein.',
+    'msg_recaptcha_failed' => 'Ihre menschliche Identität konnte nicht bestätigt werden. Bitte versuchen Sie es erneut.',
     'msg_course_created' => 'Kurs erfolgreich erstellt.',
     'msg_course_updated' => 'Kurs erfolgreich aktualisiert.',
     'msg_course_deleted' => 'Kurs erfolgreich gelöscht.',

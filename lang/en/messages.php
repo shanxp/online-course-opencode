@@ -296,6 +296,7 @@ return [
     'slug_auto_generated' => 'Auto-generated from the title. You may change it. Must be unique.',
     'msg_account_deactivated' => 'Your account has been deactivated.',
     'msg_invalid_credentials' => 'The provided credentials do not match our records.',
+    'msg_recaptcha_failed' => 'Unable to verify that you are human. Please try again.',
     'msg_course_created' => 'Course created successfully.',
     'msg_course_updated' => 'Course updated successfully.',
     'msg_course_deleted' => 'Course deleted successfully.',

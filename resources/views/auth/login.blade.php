@@ -24,7 +24,19 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('login') }}" autocomplete="off">
+            <form method="POST" action="{{ route('login') }}" autocomplete="off" id="login-form"
+                  @if(config('services.recaptcha.site_key')) x-data x-on:submit.prevent="
+                      if (typeof grecaptcha !== 'undefined') {
+                          grecaptcha.ready(() => {
+                              grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', { action: 'login' }).then((token) => {
+                                  document.getElementById('g-recaptcha-response').value = token;
+                                  document.getElementById('login-form').submit();
+                              });
+                          });
+                      } else {
+                          document.getElementById('login-form').submit();
+                      }
+                  " @endif>
                 @csrf
 
                 <div class="mb-4">
@@ -48,6 +60,8 @@
                     <label for="remember" class="ml-2 text-sm text-gray-600">{{ __('messages.remember_me') }}</label>
                 </div>
 
+                <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="">
+
                 <button type="submit"
                         class="w-full py-2 px-4 bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
                     {{ __('messages.login_button') }}
@@ -63,3 +77,9 @@
     </div>
 </div>
 @endsection
+
+@if(config('services.recaptcha.site_key'))
+    @push('scripts')
+        <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+    @endpush
+@endif

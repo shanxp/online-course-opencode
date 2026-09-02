@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\ActivityLoggerService;
+use App\Services\ReCaptchaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,6 +25,14 @@ class LoginController extends Controller
             'username' => ['required', 'string'],
             'password' => ['required', 'string'],
         ]);
+
+        $recaptcha = app(ReCaptchaService::class);
+
+        if ($recaptcha->isEnabled() && !$recaptcha->verify($request->input('g-recaptcha-response'), $request->ip())) {
+            return back()->withErrors([
+                'username' => __('messages.msg_recaptcha_failed'),
+            ])->onlyInput('username');
+        }
 
         $remember = $request->boolean('remember');
 
