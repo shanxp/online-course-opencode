@@ -31,6 +31,7 @@
                     <tr class="text-left text-sm font-medium text-gray-500 border-b">
                         <th class="px-6 py-3">{{ __('messages.title_col') }}</th>
                         <th class="px-6 py-3">{{ __('messages.course_col') }}</th>
+                        <th class="px-6 py-3">{{ __('messages.folder_col') }}</th>
                         <th class="px-6 py-3">{{ __('messages.actions_col') }}</th>
                     </tr>
                 </thead>
@@ -38,7 +39,14 @@
                     @foreach($videos as $video)
                         <tr class="border-t hover:bg-gray-50">
                             <td class="px-6 py-4 font-medium">{{ $video->title }}</td>
-                            <td class="px-6 py-4 text-gray-600">{{ $video->course->title }}</td>
+                            <td class="px-6 py-4 text-gray-600">{{ $video->course?->title }}</td>
+                            <td class="px-6 py-4 text-gray-600">
+                                @if($video->folder)
+                                    {{ $video->folder->name }}
+                                @else
+                                    <span class="text-gray-400">—</span>
+                                @endif
+                            </td>
                             <td class="px-6 py-4">
                                 <a href="{{ $video->url }}" target="_blank" class="text-primary-600 hover:text-primary-900 mr-3">{{ __('messages.watch') }}</a>
                                 <a href="{{ route('admin.youtube-videos.edit', $video) }}" class="text-primary-600 hover:text-primary-900 mr-3">{{ __('messages.edit') }}</a>

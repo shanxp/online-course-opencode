@@ -26,19 +26,6 @@
                 <option value="pdf" {{ $type === 'pdf' ? 'selected' : '' }}>{{ __('messages.pdf_document') }}</option>
             </select>
         </form>
-
-        <form method="POST" action="{{ route('admin.media.sync') }}" class="flex gap-2 items-end">
-            @csrf
-            <select name="course_id" required class="rounded-md border-gray-300 text-base px-4 py-3">
-                <option value="">{{ __('messages.sync_to_course') }}</option>
-                @foreach($courses as $course)
-                    <option value="{{ $course->id }}">{{ $course->title }}</option>
-                @endforeach
-            </select>
-            <button type="submit" class="px-3 py-2 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700">
-                {{ __('messages.sync_media') }}
-            </button>
-        </form>
     </div>
 
     <div class="mt-6 bg-white rounded-lg shadow">
@@ -52,6 +39,7 @@
                         <th class="px-6 py-3">{{ __('messages.name_col') }}</th>
                         <th class="px-6 py-3">{{ __('messages.type_col') }}</th>
                         <th class="px-6 py-3">{{ __('messages.course_col') }}</th>
+                        <th class="px-6 py-3">{{ __('messages.folder_col') }}</th>
                         <th class="px-6 py-3">{{ __('messages.size_col') }}</th>
                         <th class="px-6 py-3">{{ __('messages.actions_col') }}</th>
                     </tr>
@@ -65,7 +53,14 @@
                                     {{ strtoupper($file->type) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-gray-600">{{ $file->course->title }}</td>
+                            <td class="px-6 py-4 text-gray-600">{{ $file->course?->title }}</td>
+                            <td class="px-6 py-4 text-gray-600">
+                                @if($file->folder)
+                                    {{ $file->folder->name }}
+                                @else
+                                    <span class="text-gray-400">—</span>
+                                @endif
+                            </td>
                             <td class="px-6 py-4 text-gray-600">{{ round($file->size / 1024) }} {{ __('messages.kb') }}</td>
                             <td class="px-6 py-4">
                                 <a href="{{ route('admin.media.edit', $file) }}" class="text-gray-500 hover:text-gray-700 mr-3">{{ __('messages.edit') }}</a>

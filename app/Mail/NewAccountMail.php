@@ -22,7 +22,7 @@ class NewAccountMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: __('messages.mail_account_subject'),
+            subject: __('messages.mail_account_subject', ['app_name' => config('app.name')]),
         );
     }
 

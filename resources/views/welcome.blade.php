@@ -88,15 +88,15 @@
                 destroy() {
                     clearInterval(this.timer);
                 }
-            }" class="relative overflow-hidden text-white">
+            }" class="relative overflow-hidden text-white h-[675px]">
 
             <div class="absolute inset-0 bg-gray-900">
                 @forelse($slidePaths as $i => $path)
                     <img x-show="current === {{ $i }}" src="{{ $path }}"
-                         class="absolute inset-0 w-full h-full object-cover" alt="">
+                         class="absolute inset-0 w-full h-full object-cover object-top" alt="">
                 @empty
                     <img src="https://picsum.photos/seed/default/1600/700"
-                         class="absolute inset-0 w-full h-full object-cover" alt="">
+                         class="absolute inset-0 w-full h-full object-cover object-top" alt="">
                 @endforelse
             </div>
 

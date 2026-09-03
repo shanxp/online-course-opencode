@@ -24,7 +24,7 @@ class YouTubeController extends Controller
     {
         $courseId = $request->get('course_id');
 
-        $videos = YouTubeVideo::with('course')
+        $videos = YouTubeVideo::with(['course', 'folder'])
             ->when($courseId, fn($q) => $q->where('course_id', $courseId))
             ->latest()
             ->paginate(20);

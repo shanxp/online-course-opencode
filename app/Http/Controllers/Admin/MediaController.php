@@ -11,7 +11,6 @@ use App\Models\MediaFile;
 use App\Models\YouTubeVideo;
 use App\Services\ActivityLoggerService;
 use App\Services\FileStorageService;
-use App\Services\MediaSyncService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -22,7 +21,6 @@ class MediaController extends Controller
     public function __construct(
         private readonly FileStorageService $storageService,
         private readonly ActivityLoggerService $logger,
-        private readonly MediaSyncService $syncService,
     ) {}
 
     public function index(Request $request): View
@@ -99,22 +97,6 @@ class MediaController extends Controller
 
         return redirect()->route('admin.media.index')
             ->with('success', __('messages.msg_file_deleted'));
-    }
-
-    public function sync(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'course_id' => ['required', 'exists:courses,id'],
-            'folder_id' => ['nullable', 'exists:folders,id'],
-        ]);
-
-        $course = Course::findOrFail($request->course_id);
-        $results = $this->syncService->sync($course, $request->folder_id);
-
-        $this->logger->log('sync', "Media sync completed: {$results['created']} created, {$results['skipped']} skipped for course '{$course->title}'");
-
-        return redirect()->route('admin.media.index', ['course_id' => $course->id])
-            ->with('success', __('messages.msg_sync_complete', ['created' => $results['created'], 'skipped' => $results['skipped']]));
     }
 
     public function edit(MediaFile $media): View
